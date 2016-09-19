@@ -43,23 +43,22 @@ a {
     font-weight: 400;
 }
 
+.btn-primary{
+    width: 100%;
+}
 
-@media screen and (orientation: portrait){
+@media screen and (max-width: 505px) {
+  .dropdown-toggle.btn-primary{
+    text-align: right;
+  }
   #search {
     bottom: 0;
-    top:30%;
     width: 50%;
-      height: 20%;
-      overflow: scroll;
+    height: 20%;
+    overflow: scroll;
   }
-  #map {
-  height: 100%;
-  width:100%;
-  }
-
-.dropdown{
-  visibility: hidden}
 }
+
 
 
 
