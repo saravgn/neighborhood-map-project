@@ -1,0 +1,66 @@
+html,body{
+    width: 100%;
+    height: 100%;
+}
+
+#map {
+      width: 100%;
+      height: 100%;
+}
+
+#search {
+    position: absolute;
+    top: 13%;
+    padding: 1%;
+    height: 40%;
+    background-color: beige;
+    z-index: 5;
+    overflow: scroll;
+}
+  
+.dropdown{
+  width: 100%;
+}
+
+ul {
+    margin: 10px 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+h1 {
+    font-size: 14px;
+}
+
+a {
+    color: white;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+
+@media screen and (orientation: portrait){
+  #search {
+    bottom: 0;
+    top:30%;
+    width: 50%;
+      height: 20%;
+      overflow: scroll;
+  }
+  #map {
+  height: 100%;
+  width:100%;
+  }
+
+.dropdown{
+  visibility: hidden}
+}
+
+
+
+
