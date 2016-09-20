@@ -21,6 +21,16 @@
                 <li data-bind="text: title, visible:getVisible()"></li>
             </a>
         </ul>
+
+        <hr>
+        
+        <h4>Wikipedia results:</h4>
+        <div id="wikipedia" class="wikipedia"></div>
+        <ul data-bind="foreach: wikiArrResults">
+            <a data-bind="attr: {href: wikiLink}">
+              <li data-bind="text: wikiName"></li>
+            </a>
+        </ul>
   </div>
 
 <div class="row">

@@ -40,6 +40,13 @@ li {
     font-size: 7px;
 }
 
+.h4, h4 {
+    padding: 1%;
+    font-family: 'Indie Flower', cursive;
+    font-size: 20px;
+    color: pink;
+}
+
 a {
     color: blue;
     font-size: 14px;

@@ -32,6 +32,9 @@ self.attractions = ko.observableArray([
 var MapViewModel = function() {
     
     self.infowindow = null;
+    self.wikiName = ko.observable();
+    self.wikiLink = ko.observable();
+    self.wikiArrResults = ko.observableArray();
 
     // icon for markers: beach, parks, attractions
 
@@ -61,7 +64,6 @@ var MapViewModel = function() {
     self.sidneyMarkers = ko.observableArray();
     self.currentMarkerName = ko.observable('Choose a marker to see ʘ‿ʘ');
     
-
     // function to set infowindows 
     function setInfoWindow(currentmarker){
 
@@ -80,9 +82,39 @@ var MapViewModel = function() {
             '</div>',
         maxWidth: 200
         });
-        self.infowindow.open(map, currentmarker); 
-    };
+        self.infowindow.open(map, currentmarker);
 
+        //Wikipedia API for search documents relative to the current marker
+        self.wikiArrResults([]);
+        var $wikipedia = $('#wikipedia');
+        $wikipedia.text("");
+        var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + currentmarker.title + '&format=json&callback=wikiCallback';
+            var timeout = setTimeout(function(){
+                $wikipedia.text("Ops, wikepedia resourses not found");
+            }, 1000);
+
+            // Wikipedia Api to retrive wiki links about the marker
+            $.ajax({
+               url: wikiUrl,
+               dataType: "jsonp",
+               jsonp: "callback",
+               }).done(function(response) {
+                    var docswiki = response[1];
+                    for (var i = 0; i < docswiki.length; i++) {
+                        var namedoc = docswiki[i];
+                        var url = 'https://en.wikipedia.org/wiki/' + namedoc;
+                        self.wikiLink(url);
+                        self.wikiName(namedoc);
+                        self.wikiArrResults.push(
+                            {
+                                wikiLink : self.wikiLink(),
+                                wikiName : self.wikiName(),
+                            }
+                        )
+                    };
+                    clearTimeout(timeout);
+            });
+    };
 
     // add markers to the map
 
@@ -156,64 +188,9 @@ var MapViewModel = function() {
             });
     };
 
-    // OTHER FUNCTIONALITIES for menu list sidneyMarkers
-
     self.visibleBeaches = ko.observable(true);
     self.visibleParks = ko.observable(true);
     self.visibleAttractions = ko.observable(true);
-
-    // self.setVisibilityBeachesTrue = function(){
-    //     self.visibleBeaches(false);
-    //     // console.log(visibleBeaches());
-    //     return false;
-    // };
-    // self.setVisibilityParksTrue = function(){
-    //     self.visibleParks(false);
-    //     // console.log(visibleParks());
-    //     return false;
-    // };
-    // self.setVisibilityAttractionsTrue = function(){
-    //     self.visibleAttractions(false);
-    //     // console.log(visibleAttractions());
-    //     return false;
-    // };
-    // // make the menu visible
-    // self.resetVisibility = function () {
-    //     self.visibleBeaches(true);
-    //     self.visibleParks(true);
-    //     self.visibleAttractions(true);
-    // };
-    // chosen marker detail
-    // self.currentMarkerName = ko.observable();
-    // self.currentMarkerLat = ko.observable();
-    // self.currentMarkerLng = ko.observable();
-    // self.currentMarkerZ = ko.observable();
-    // function setCurrentMarkerDetail(marker){
-    //     self.currentMarkerName(marker.name);
-    //     self.currentMarkerLat(marker.lat);
-    //     self.currentMarkerLng(marker.lng);
-    //     self.currentMarkerZ(marker.z);
-    // };
-    // self.onClickBeaches = function (marker) {
-    //     self.setVisibilityAttractionsTrue();
-    //     self.setVisibilityParksTrue();
-    //     setCurrentMarkerDetail(marker);
-    // };
-    // // those are required to execute double 
-    // // function with knockout
-    // self.onClickAttractions = function (marker) {
-    //     self.setVisibilityBeachesTrue();
-    //     self.setVisibilityParksTrue();
-    //     setCurrentMarkerDetail(marker);
-    // };
-    // self.onClickParks = function (marker) {
-    //     self.setVisibilityBeachesTrue();
-    //     self.setVisibilityAttractionsTrue();
-    //     setCurrentMarkerDetail(marker);
-    // };
-    // takes the user input name for marker and searches in the 
-    // list of markers, if there is a marker with that name 
-    // it makes it visible to the user
         
     self.search.subscribe(function(chosenMarkerName) {
         if(self.infowindow){
