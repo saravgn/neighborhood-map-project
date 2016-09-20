@@ -216,6 +216,9 @@ var MapViewModel = function() {
     // it makes it visible to the user
         
     self.search.subscribe(function(chosenMarkerName) {
+        if(self.infowindow){
+            self.infowindow.close();
+        }
         chosenMarkerName = chosenMarkerName.toLowerCase();
         var mod = false;
         ko.utils.arrayForEach(self.sidneyMarkers(), function(sidneyMarker) {
@@ -239,6 +242,10 @@ var MapViewModel = function() {
         }
     });
 };
+
+function errorScript(){
+    alert("Ops, there has been a problem with Google")
+}
 
 
 /* ======= Initialize ======= */
