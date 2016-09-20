@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /* ======= Model ======= */
 //Array containing location data
@@ -7,7 +7,7 @@
 self.beaches = ko.observableArray([
     { name: "Bondi Beach", lat: -33.890542, lng:151.274856, z:4},
     { name: "Coogee Beach", lat: -33.923036, lng:151.259052, z:5},
-    { name: "Cronulla Beach", lat: -34.055286, lng:151.154942, z:3},
+    { name: "Cronulla, NSW", lat: -34.055286, lng:151.154942, z:3},
     { name: "Manly Beach", lat: -33.80010128657071, lng:151.28747820854187, z:2},
     { name: "Maroubra Beach", lat: -33.950198, lng:151.259302, z:1}
 ]);
@@ -15,7 +15,7 @@ self.beaches = ko.observableArray([
 self.parks = ko.observableArray([
     { name: "Sydney Olympic Park", lat: -33.890542, lng:151.274856, z:3},
     { name: "Hide Park", lat: -33.872325, lng:151.210748, z:2},
-    { name: "Royal Botanic Garden", lat: -33.864362, lng:151.218335, z:1}
+    { name: "Royal Botanic Gardens", lat: -33.864362, lng:151.218335, z:1}
 ]);
 
 self.attractions = ko.observableArray([
@@ -31,7 +31,7 @@ self.attractions = ko.observableArray([
 
 var MapViewModel = function() {
     
-    var infowindow = null;
+    self.infowindow = null;
 
     // icon for markers: beach, parks, attractions
 
@@ -60,7 +60,30 @@ var MapViewModel = function() {
     self.marker;
     self.sidneyMarkers = ko.observableArray();
     self.currentMarkerName = ko.observable('Choose a marker to see ʘ‿ʘ');
+    
+
+    // function to set infowindows 
+    function setInfoWindow(currentmarker){
+
+        var streetviewUrl = 'http://maps.googleapis.com/maps/api/streetview?size=300x200&location=' + currentmarker.title + '';
         
+        self.infowindow = new google.maps.InfoWindow({
+        content: '<div id="content">'+
+            '<div id="siteNotice">'+
+            '<h2 id="firstHeading" class="firstHeading">City: ' + currentmarker.title + '</h2>' +
+            '</div>'+
+            '<div id="bodyContent">'+
+            '<img class="bgimg" src="' + streetviewUrl + '">'+
+            '<br>'+
+            '<h1>' + 'Position: ' + '<br>'+ currentmarker.position + '</h1>'+
+            '</div>'+
+            '</div>',
+        maxWidth: 200
+        });
+        self.infowindow.open(map, currentmarker); 
+    };
+
+
     // add markers to the map
 
     function setIconsidneyMarkers(sidneyMarkersArray,image){
@@ -80,29 +103,17 @@ var MapViewModel = function() {
 
             marker.addListener('click', (function(markerCopy) {
                 return function(){
-                    if(infowindow){
-                        infowindow.close();
+                    if(self.infowindow){
+                        self.infowindow.close();
                     }
                     markerCopy.setAnimation(google.maps.Animation.BOUNCE);
                     setTimeout(function() {
                             markerCopy.setAnimation("");
                     }, 1500);
                     self.currentMarkerName(markerCopy.title);
-                    var streetviewUrl = 'http://maps.googleapis.com/maps/api/streetview?size=300x200&location=' + markerCopy.title + '';
-                    // open windows for marker information on click from Google API
-                    infowindow = new google.maps.InfoWindow({
-                    content: '<div id="content">'+
-                                    '<div id="siteNotice">'+
-                                    '<h2 id="firstHeading" class="firstHeading">City: ' + markerCopy.title + '</h2>' +
-                                    '</div>'+
-                                    '<div id="bodyContent">'+
-                                    '<img class="bgimg" src="' + streetviewUrl + '">'+
-                                    '<br>'+
-                                    '<h1>' + 'Position: ' + markerCopy.position + '</h1>'+
-                                    '</div>'+
-                                    '</div>'
-                    });
-                    infowindow.open(map, markerCopy); 
+                    
+                    setInfoWindow(markerCopy);
+
                     self.animate(this.name, this);
                 };
             })(marker));
@@ -119,12 +130,19 @@ var MapViewModel = function() {
     var selectedMarker = null;
 
     self.onClickMarker = function(searchId) {
+        
+        if(self.infowindow){
+            self.infowindow.close();
+        }
+
         self.animate(searchId, null);
     };
         
     self.animate = function(searchId, marker) {            
             self.sidneyMarkers().forEach(function(currentmarker) {    
                 if (currentmarker.mark_id === searchId) {
+                    setInfoWindow(currentmarker); 
+                    // set animation on marker click
                     selectedMarker = currentmarker;
                     currentmarker.setAnimation(google.maps.Animation.BOUNCE);
                     var currentIcon = currentmarker.getIcon();
@@ -246,8 +264,8 @@ function init() {
     self.map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
     // Instantiate View Model
-    var mapview = new MapViewModel();
+    self.mapview = new MapViewModel();
 
     // Apply knockout bindings
-    ko.applyBindings(mapview);
+    ko.applyBindings(self.mapview);
 };
