@@ -19,7 +19,7 @@ self.parks = ko.observableArray([
 ]);
 
 self.attractions = ko.observableArray([
-    { name: "Sea life Acquarium", lat: -33.869717, lng:151.202304, z:3},
+    { name: "Sea Life Sydney Aquarium", lat: -33.869717, lng:151.202304, z:3},
     { name: "Luna Park", lat: -33.847930, lng:151.210021, z:2},
     { name: "Madame Tussouds", lat: -33.869408, lng:151.201819, z:1}
 ]);
@@ -35,6 +35,7 @@ var MapViewModel = function() {
     self.wikiName = ko.observable();
     self.wikiLink = ko.observable();
     self.wikiArrResults = ko.observableArray();
+    self.visWikiErr = ko.observable(true);
 
     // icon for markers: beach, parks, attractions
 
@@ -63,7 +64,8 @@ var MapViewModel = function() {
     self.marker;
     self.sidneyMarkers = ko.observableArray();
     self.currentMarkerName = ko.observable('Choose a marker to see ʘ‿ʘ');
-    
+    self.wikiError = ko.observable();
+
     // function to set infowindows 
     function setInfoWindow(currentmarker){
 
@@ -86,13 +88,12 @@ var MapViewModel = function() {
 
         //Wikipedia API for search documents relative to the current marker
         self.wikiArrResults([]);
-        var $wikipedia = $('#wikipedia');
-        $wikipedia.text("");
+
         var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + currentmarker.title + '&format=json&callback=wikiCallback';
             var timeout = setTimeout(function(){
-                $wikipedia.text("Ops, wikepedia resourses not found");
-            }, 1000);
-
+                self.wikiError("Ops, wikepedia resourses not found");
+            }, 3000);
+            self.wikiError("");
             // Wikipedia Api to retrive wiki links about the marker
             $.ajax({
                url: wikiUrl,

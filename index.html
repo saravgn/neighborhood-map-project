@@ -25,6 +25,7 @@
         <hr>
         
         <h4>Wikipedia results:</h4>
+        <div class="wikierror" data-bind="text:wikiError"></div>
         <div id="wikipedia" class="wikipedia"></div>
         <ul data-bind="foreach: wikiArrResults">
             <a data-bind="attr: {href: wikiLink}">
